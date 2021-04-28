@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>碰撞分析</title>
+		<link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+		{% load static %}
+		<script src="{% static 'jquery-3.6.0.min.js'%}"></script>
+		<script src="{% static 'bootstrap.min.js'%}"></script>
+		<script src="https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
+	</head>
+	<body>
+		<nav class="navbar navbar-default" role="navigation">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<a class="navbar-brand">大数据平台</a>
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#my_nav_list">
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+				</div>
+				<div class="collapse navbar-collapse" id="my_nav_list">
+					<ul class="nav navbar-nav">
+						<li class="dropdown">
+							<a class="dropdown-toggle" data-toggle="dropdown">智能监控</a>
+							<ul class="dropdown-menu">
+								<li>
+									<a href="/index/">道路地图</a>
+								</li>
+								<li>
+									<a href="/monitorShow/">监控数据</a>
+								</li>
+							</ul>
+						</li>
+						<li class="dropdown">
+							<a class="dropdown-toggle" data-toggle="dropdown">数据分析</a>
+							<ul class="dropdown-menu">
+								<li>
+									<a href="/trafficStatics/">流量统计</a>
+								</li>
+								<li>
+									<a href="/districtStatics/">区域统计</a>
+								</li>
+								<li>
+									<a href="/foreignCar/">外地车统计</a>
+								</li>
+								<li>
+									<a href="/realTimeAnalysis/">实时分析</a>
+								</li>
+								<li>
+									<a href="/trafficForecast/">流量预测</a>
+								</li>
+							</ul>
+						</li>
+						<li class="active dropdown">
+							<a class="dropdown-toggle" data-toggle="dropdown">地图搜车</a>
+							<ul class="dropdown-menu">
+								<li>
+									<a href="/carSearch/">车辆搜索</a>
+								</li>
+								<li class="active">
+									<a href="/collisionAnalysis/">碰撞分析</a>
+								</li>
+							</ul>
+						</li>
+					</ul>
+					<form class="navbar-form navbar-left">
+						<div class="form-group">
+							<input type="text" class="form-control" placeholder="Search">
+						</div>
+						<button type="submit" class="btn btn-default">搜索</button>
+					</form>
+					<ul class="nav navbar-nav navbar-right">
+						<li class="dropdown">
+							<a class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user"></span></a>
+							<ul class="dropdown-menu">
+								<li>
+									<a>用户信息</a>
+								</li>
+								<li>
+									<a>退出</a>
+								</li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+		<h3>碰撞分析</h3>
+		<hr />
+		<div class="row">
+			<div class="col-md-4 col-md-offset-4">
+				<h4>最近一周总共发生有{{myData.collision_matter_list|length}}次碰撞</h4>
+				<h4>涉事车辆{{myData.collision_car_count}}辆</h4>
+			</div>
+			<div class="col-md-8 col-md-offset-2">
+				<table class="table">
+					<caption>详细信息</caption>
+					<thead>
+						<tr>
+							<th>时间</th>
+							<th>摄像机号</th>
+							<th>区域</th>
+							<th>道路</th>
+							<th>涉事车辆</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for matter in myData.collision_matter_list %}
+						<tr>
+							<td>{{ matter.action_time }}</td>
+							<td>{{ matter.camera_id }}</td>
+							<td>{{ matter.area_id }}</td>
+							<td>{{ matter.road_id }}</td>
+							<td>
+								{% for car in matter.car_list %}
+								<a href="/carSearch/?car_id={{car}}">{{car}}</a>&nbsp;&nbsp;
+								{% endfor %}
+							</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</body>
+</html>

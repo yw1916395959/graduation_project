@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>实时分析</title>
+		<link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+		{% load static %}
+		<script src="{% static 'jquery-3.6.0.min.js'%}"></script>
+		<script src="{% static 'bootstrap.min.js'%}"></script>
+		<script src="https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
+	</head>
+	<style type="text/css">
+		.tschart {
+			width: 100%;
+			height: 400px;
+		}
+	</style>
+	<body>
+		<nav class="navbar navbar-default" role="navigation">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<a class="navbar-brand">大数据平台</a>
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#my_nav_list">
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+				</div>
+				<div class="collapse navbar-collapse" id="my_nav_list">
+					<ul class="nav navbar-nav">
+						<li class="dropdown">
+							<a class="dropdown-toggle" data-toggle="dropdown">智能监控</a>
+							<ul class="dropdown-menu">
+								<li>
+									<a href="/index/">道路地图</a>
+								</li>
+								<li>
+									<a href="/monitorShow/">监控数据</a>
+								</li>
+							</ul>
+						</li>
+						<li class="active dropdown">
+							<a class="dropdown-toggle" data-toggle="dropdown">数据分析</a>
+							<ul class="dropdown-menu">
+								<li>
+									<a href="/trafficStatics/">流量统计</a>
+								</li>
+								<li>
+									<a href="/districtStatics/">区域统计</a>
+								</li>
+								<li>
+									<a href="/foreignCar/">外地车统计</a>
+								</li>
+								<li class="active">
+									<a href="/realTimeAnalysis/">实时分析</a>
+								</li>
+								<li>
+									<a href="/trafficForecast/">流量预测</a>
+								</li>
+							</ul>
+						</li>
+						<li class="dropdown">
+							<a class="dropdown-toggle" data-toggle="dropdown">地图搜车</a>
+							<ul class="dropdown-menu">
+								<li>
+									<a href="/carSearch/">车辆搜索</a>
+								</li>
+								<li>
+									<a href="/collisionAnalysis/">碰撞分析</a>
+								</li>
+							</ul>
+						</li>
+					</ul>
+					<form class="navbar-form navbar-left">
+						<div class="form-group">
+							<input type="text" class="form-control" placeholder="Search">
+						</div>
+						<button type="submit" class="btn btn-default">搜索</button>
+					</form>
+					<ul class="nav navbar-nav navbar-right">
+						<li class="dropdown">
+							<a class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user"></span></a>
+							<ul class="dropdown-menu">
+								<li>
+									<a>用户信息</a>
+								</li>
+								<li>
+									<a>退出</a>
+								</li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+		<h3>实时分析</h3>
+		<div class="row">
+			<div class="col-md-3 col-md-offset-1">
+				<h4 id="real_time_car_count_show">总共统计0条信息</h4>
+				<button id="analysis_start" class="btn btn-default">开始分析</button>
+				<button id="analysis_stop" class="btn btn-default">结束分析</button>
+				<h4 id="msg"></h4>
+			</div>
+			<div class="col-md-6 col-md-offset-2">
+				<div id="real_time_road_chart" class="tschart"></div>
+			</div>
+			<div class="col-md-8 col-md-offset-2">
+				<div id="real_time_road_count" class="tschart"></div>
+			</div>
+			<div class="col-md-8 col-md-offset-2">
+				<table class="table">
+					<caption id="real_time_speeding_car_show">超速车辆最新0条数据</caption>
+					<thead>
+						<tr>
+							<th>监控区域</th>
+							<th>摄像机号</th>
+							<th>车牌</th>
+							<th>拍摄时间</th>
+							<th>车速</th>
+							<th>道路</th>
+							<th>区域</th>
+						</tr>
+					</thead>
+					<tbody id="real_time_speeding_car_list_show">
+						<!-- {% for detail in myData.real_time_speeding_data_list reversed%}
+						<tr>
+							<td>{{ detail.monitor_id }}</td>
+							<td>{{ detail.camera_id }}</td>
+							<td>{{ detail.car_id}}</td>
+							<td>{{ detail.action_time}}</td>
+							<td>{{ detail.car_speed }}</td>
+							<td>{{ detail.road_id }}</td>
+							<td>{{ detail.area_id }}</td>
+						</tr>
+						{% endfor %} -->
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript">
+		
+		
+		
+		// var real_time_car_road_list = {{myData.real_time_car_road_list | safe}}
+		// var my_road = []
+		// var my_road_count = []
+		// var my_road_datas = []
+		// for (var i = 0; i < real_time_car_road_list.length; i++) {
+		// 	var my_road_data = {}
+		// 	my_road.push(real_time_car_road_list[i]['road_id'] + '号道路')
+		// 	my_road_data['value'] = real_time_car_road_list[i]['count']
+		// 	my_road_count.push(real_time_car_road_list[i]['count'])
+		// 	my_road_data['name'] = real_time_car_road_list[i]['road_id'] + '号道路'
+		// 	my_road_datas.push(my_road_data)
+		// }
+		
+		var real_time_road_chart = echarts.init(document.getElementById("real_time_road_chart"));
+		var real_time_road_chart_option = {
+			title: {
+				text: '实时道路流量统计',
+				left: 'center'
+			},
+			tooltip: {
+				trigger: 'item',
+				formatter: '{a} <br/>{b} : {c} ({d}%)'
+			},
+			legend: {
+				orient: 'vertical',
+				left: 'left',
+				data: []
+			},
+			series: [{
+				name: '访问来源',
+				type: 'pie',
+				radius: '80%',
+				data: [],
+			}],
+			emphasis: {
+				itemStyle: {
+					shadowBlur: 10,
+					shadowOffsetX: 0,
+					shadowColor: 'rgba(0, 0, 0, 0.5)'
+				}
+			}
+		};
+		real_time_road_chart.setOption(real_time_road_chart_option);
+		
+		//初始化ehcharts实例
+		var real_time_road_count = echarts.init(document.getElementById("real_time_road_count"));
+		//指定图表的配置项和数据
+		var real_time_road_count_option = {
+			xAxis: {
+				max: 'dataMax',
+			},
+			yAxis: {
+				type: 'category',
+				data: [],
+				inverse: true,
+				animationDuration: 500,
+				animationDurationUpdate: 500,
+				max: 8
+			},
+			series: [{
+				realtimeSort: true,
+				name: '流量',
+				type: 'bar',
+				data: [],
+				label: {
+					show: true,
+					position: 'right',
+					valueAnimation: true
+				}
+			}],
+			legend: {
+				show: true
+			},
+			animationDuration: 0,
+			animationDurationUpdate: 15000,
+			animationEasing: 'linear',
+			animationEasingUpdate: 'linear'
+		};
+		//使用刚刚指定的配置项和数据项显示图表
+		real_time_road_count.setOption(real_time_road_count_option);
+		
+		function add(detail){
+			$('#real_time_speeding_car_list_show').empty()
+			for(var i=0;i<detail.length;i++){
+				var tr="<tr><td>"+detail[i].monitor_id+"</td><td>"+detail[i].camera_id+"</td><td>"+detail[i].car_id+"</td><td>"+detail[i].action_time+"</td><td>"+detail[i].car_speed+"</td><td>"+detail[i].road_id+"</td><td>"+detail[i].area_id+"</td></tr>"
+				$('#real_time_speeding_car_list_show').append(tr)
+			}
+		}
+		
+		function run() {
+			$.get("/realTimeData/", function(data, status) {
+				// console.log("数据: " + data + "\n状态: " + status);
+				var real_time_car_road_list_data=data['real_time_car_road_list']
+				var get_road_count = []
+				var get_road_datas = []
+				// console.log(data)
+				for (var i = 0; i < real_time_car_road_list_data.length; i++) {
+					var get_road_data = {}
+					get_road_data['value'] = real_time_car_road_list_data[i]['count']
+					get_road_count.push(real_time_car_road_list_data[i]['count'])
+					get_road_data['name'] = real_time_car_road_list_data[i]['road_id'] + '号道路'
+					get_road_datas.push(get_road_data)
+				}
+				var get_road_name=[]
+				for (var j = 0; j < get_road_datas.length; j++) {
+					get_road_name.push(get_road_datas[j]['name'])
+				}
+				real_time_road_count_option.series[0].data = get_road_count;
+				real_time_road_count_option.yAxis.data = get_road_name;
+				real_time_road_chart_option.legend.data = get_road_name;
+				real_time_road_chart_option.series[0].data = get_road_datas;
+				real_time_road_count.setOption(real_time_road_count_option);
+				real_time_road_chart.setOption(real_time_road_chart_option);
+				$('#real_time_car_count_show').text("总共统计"+data['real_time_car_count']+"条信息")
+				$('#real_time_speeding_car_show').text("超速车辆最新"+data['real_time_speeding_data_list'].length+"条数据")
+				add(data['real_time_speeding_data_list'].reverse())
+			});
+		};
+
+		var myInterval=null;
+		
+		$(document).ready(function(){
+		  $('#analysis_start').click(function(){
+			$('#msg').text('正在启动，请等待。。。')
+		  	$.get("/realTimeAnalysisStart/", function(data, status) {
+		  		console.log("数据: " + data + "\n状态: " + status);
+				$('#msg').text('')
+				myInterval=setInterval(function() {
+					run()
+				}, 15000);
+		  	});
+		  })
+		  
+		  $('#analysis_stop').click(function(){
+			$('#msg').text('正在关闭，请等待。。。')
+		  	$.get("/realTimeAnalysisStop/", function(data, status) {
+		  		console.log("数据: " + data + "\n状态: " + status);
+				clearInterval(myInterval);
+				setTimeout(function(){$('#msg').text('关闭成功')}, 3000);
+				// $('#msg').text('关闭成功')
+		  	});
+		  })
+		})
+	</script>
+</html>

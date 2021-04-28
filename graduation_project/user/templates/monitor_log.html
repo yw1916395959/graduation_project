@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>道路监控</title>
+		<link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+		{% load static %}
+		<script src="{% static 'jquery-3.6.0.min.js'%}"></script>
+		<script src="{% static 'bootstrap.min.js'%}"></script>
+	</head>
+	<body>
+		<nav class="navbar navbar-default" role="navigation">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<a class="navbar-brand">大数据平台</a>
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#my_nav_list">
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+				</div>
+				<div class="collapse navbar-collapse" id="my_nav_list">
+					<ul class="nav navbar-nav">
+						<li class="active dropdown">
+							<a class="dropdown-toggle" data-toggle="dropdown">智能监控</a>
+							<ul class="dropdown-menu">
+								<li>
+									<a href="/index/">道路地图</a>
+								</li>
+								<li class="active">
+									<a href="/monitorShow/">监控数据</a>
+								</li>
+							</ul>
+						</li>
+						<li class="dropdown">
+							<a class="dropdown-toggle" data-toggle="dropdown">数据分析</a>
+							<ul class="dropdown-menu">
+								<li>
+									<a href="/trafficStatics/">流量统计</a>
+								</li>
+								<li>
+									<a href="/districtStatics/">区域统计</a>
+								</li>
+								<li>
+									<a href="/foreignCar/">外地车统计</a>
+								</li>
+								<li>
+									<a href="/realTimeAnalysis/">实时分析</a>
+								</li>
+								<li>
+									<a href="/trafficForecast/">流量预测</a>
+								</li>
+							</ul>
+						</li>
+						<li class="dropdown">
+							<a class="dropdown-toggle" data-toggle="dropdown">地图搜车</a>
+							<ul class="dropdown-menu">
+								<li>
+									<a href="/carSearch/">车辆搜索</a>
+								</li>
+								<li>
+									<a href="/collisionAnalysis/">碰撞分析</a>
+								</li>
+							</ul>
+						</li>
+						
+					</ul>
+					<form class="navbar-form navbar-left">
+						<div class="form-group">
+							<input type="text" class="form-control" placeholder="Search">
+						</div>
+						<button type="submit" class="btn btn-default">搜索</button>
+					</form>
+					<ul class="nav navbar-nav navbar-right">
+						<li class="dropdown">
+							<a class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user"></span></a>
+							<ul class="dropdown-menu">
+								<li>
+									<a>用户信息</a>
+								</li>
+								<li>
+									<a>退出</a>
+								</li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+		<form action="/getmonitordata/" method="post" class="form-inline">
+			<div class="form-group">
+				<div class="input-group">
+					<label class="input-group-addon">起始时间</label><input type="date" class="form-control" name="from_date" />
+				</div>
+				<div class="input-group">
+					<label class="input-group-addon">结束时间</label><input type="date" class="form-control" name="end_date" />
+				</div>
+				<label>区域</label>
+				<select class="form-control" name="area_id">
+					<option value="0">全部</option>
+					<option value="1">教学区</option>
+					<option value="2">西区</option>
+					<option value="3">东区</option>
+				</select>
+				<label>道路</label>
+				<select class="form-control" name="road_id">
+					<option value="0">全部</option>
+					<option value="1">1</option>
+					<option value="2">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5">5</option>
+					<option value="6">6</option>
+					<option value="7">7</option>
+					<option value="8">8</option>
+					<option value="9">9</option>
+				</select>
+				<div class="input-group">
+					<label class="input-group-addon">车牌号</label><input type="text" class="form-control" name="car_id" />
+				</div>
+				<div class="input-group">
+					<label class="input-group-addon">车速</label><input type="number" class="form-control" name="car_speed" />
+				</div>
+				<div class="input-group">
+					<label class="input-group-addon">拍摄区域</label><input type="number" class="form-control" name="monitor_id" />
+				</div>
+				<div class="input-group">
+					<label class="input-group-addon">摄像头编号</label><input type="number" class="form-control" name="camera_id" />
+				</div>
+				<label>一页显示多少条数据</label>
+				<select class="form-control" name="limit_num">
+					<option value="20">20</option>
+					<option value="50">50</option>
+					<option value="100">100</option>
+				</select>
+				<input type="hidden" name="page_num" value="0">
+			</div>
+			<button type="submit" class="btn btn-block btn-default">查询</button>
+		</form>
+		<hr>
+		<table class="table">
+			<caption>监控详细数据:本页显示{{data|length}}</caption>
+			<thead>
+				<tr>
+					<th>日期</th>
+					<th>监控区域</th>
+					<th>摄像机号</th>
+					<th>车牌</th>
+					<th>拍摄时间</th>
+					<th>车速</th>
+					<th>道路</th>
+					<th>区域</th>
+				</tr>
+			</thead>
+			<tbody>
+				<!-- <tr>
+					<td>2021-01-01</td>
+					<td>1</td>
+					<td>1</td>
+					<td>京C00001</td>
+					<td>2021-01-01 01:01:01</td>
+					<td>1</td>
+					<td>1</td>
+					<td>1</td>
+				</tr> -->
+				{% for detail in data %}
+				<tr>
+					<td>{{ detail.monitor_date|date:"Y-m-d" }}</td>
+					<td>{{ detail.monitor_id }}</td>
+					<td>{{ detail.camera_id }}</td>
+					<td>{{ detail.car_id}}</td>
+					<td>{{ detail.action_time|date:"Y-m-d H:i:s"}}</td>
+					<td>{{ detail.car_speed }}</td>
+					<td>{{ detail.road_id }}</td>
+					<td>{{ detail.area_id }}</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+		<button id="monitor_log_page_change_substract" class="btn btn-primary">上一页</button>
+		<button id="monitor_log_page_change_add" class="btn btn-primary">下一页</button>
+	</body>
+	<script type="text/javascript">
+		
+	</script>
+</html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>第一个 ECharts 实例</title>
+		<!-- 引入 echarts.js -->
+		<script src="https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
+	</head>
+	<body>
+		<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+		<div id="main" style="width: 600px;height:400px;"></div>
+		<script type="text/javascript">
+			// 基于准备好的dom，初始化echarts实例
+			var myChart = echarts.init(document.getElementById('main'));
+
+			myChart.setOption({
+				series: [{
+					name: '访问来源',
+					type: 'pie', // 设置图表类型为饼图
+					radius: '55%', // 饼图的半径，外半径为可视区尺寸（容器高宽中较小一项）的 55% 长度。
+					data: [ // 数据数组，name 为数据项名称，value 为数据项值
+						{
+							value: 235,
+							name: '视频广告'
+						},
+						{
+							value: 274,
+							name: '联盟广告'
+						},
+						{
+							value: 310,
+							name: '邮件营销'
+						},
+						{
+							value: 335,
+							name: '直接访问'
+						},
+						{
+							value: 400,
+							name: '搜索引擎'
+						}
+					]
+				}]
+			})
+		</script>
+		<div id="main2" style="width: 600px;height:400px;"></div>
+		<script type="text/javascript">
+			// 基于准备好的dom，初始化echarts实例
+			var myChart = echarts.init(document.getElementById('main2'));
+
+			// 指定图表的配置项和数据
+			var option = {
+				title: {
+					text: '第一个 ECharts 实例'
+				},
+				tooltip: {},
+				legend: {
+					data: ['销量']
+				},
+				xAxis: {
+					data: ["衬衫", "羊毛衫", "雪纺衫", "裤子", "高跟鞋", "袜子"]
+				},
+				yAxis: {},
+				series: [{
+					name: '销量',
+					type: 'bar',
+					data: [5, 20, 36, 10, 10, 20]
+				}]
+			};
+
+			// 使用刚指定的配置项和数据显示图表。
+			myChart.setOption(option);
+		</script>
+		<div id="main3" style="width: 600px;height: 400px;"></div>
+		<script>
+			//初始化ehcharts实例
+			var myChart = echarts.init(document.getElementById("main3"));
+			//指定图表的配置项和数据
+			var option = {
+				//标题
+				title: {
+					text: '生鲜销量统计'
+				},
+
+				//图例-每一条数据的名字叫销量
+				legend: {
+					data: ['销量']
+				},
+				//x轴
+				xAxis: {
+					data: ["苹果", "橘子", "橙子", "香蕉", "菠萝", "榴莲"]
+				},
+				//y轴没有显式设置，根据值自动生成y轴
+				yAxis: {},
+				//数据-data是最终要显示的数据
+				series: [{
+					name: '销量',
+					type: 'line',
+					data: [40, 20, 35, 60, 55, 10]
+				}]
+			};
+			//使用刚刚指定的配置项和数据项显示图表
+			myChart.setOption(option);
+		</script>
+		<div id="main4" style="width: 600px;height: 400px;"></div>
+		<script>
+			var data = [1, 2, 3, 4, 5];
+			// for (let i = 0; i < 3; ++i) {
+			//     data.push(Math.round(Math.random() * 200));
+			// }
+
+			//初始化ehcharts实例
+			var myChart = echarts.init(document.getElementById("main4"));
+			//指定图表的配置项和数据
+			var option = {
+				xAxis: {
+					max: 'dataMax',
+				},
+				yAxis: {
+					type: 'category',
+					data: ['A', 'B', 'C', 'D', 'E'],
+					inverse: true,
+					animationDuration: 300,
+					animationDurationUpdate: 300,
+					max: 4 // only the largest 3 bars will be displayed
+				},
+				series: [{
+					realtimeSort: true,
+					name: '道路',
+					type: 'bar',
+					data: data,
+					label: {
+						show: true,
+						position: 'right',
+						valueAnimation: true
+					}
+				}],
+				legend: {
+					show: true
+				},
+				animationDuration: 0,
+				animationDurationUpdate: 3000,
+				animationEasing: 'linear',
+				animationEasingUpdate: 'linear'
+			};
+			//使用刚刚指定的配置项和数据项显示图表
+			myChart.setOption(option);
+
+			function run() {
+				var data = option.series[0].data;
+				for (var i = 0; i < data.length; ++i) {
+					if (Math.random() > 0.9) {
+						data[i] += Math.round(Math.random() * 2000);
+					} else {
+						data[i] += Math.round(Math.random() * 200);
+					}
+				}
+				myChart.setOption(option);
+			}
+			setTimeout(function() {
+				run();
+			}, 1000);
+			setInterval(function() {
+				run();
+			}, 10000);
+		</script>
+	</body>
+</html>
